@@ -1,4 +1,14 @@
 HELP.md
+
+### Local secrets — NEVER commit ###
+application-local.yml
+src/main/resources/application-local.yml
+.env
+.env.*
+
+### OS ###
+.DS_Store
+
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar

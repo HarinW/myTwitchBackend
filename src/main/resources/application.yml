@@ -1,4 +1,16 @@
+# Twitch API credentials are injected from the environment (TWITCH_CLIENT_ID /
+# TWITCH_CLIENT_SECRET) or, for local development, from an untracked
+# `application-local.yml` (see application-local.yml.example).
+# NEVER hard-code real credentials in this file -- it is committed to git.
+twitch:
+  client-id: "${TWITCH_CLIENT_ID}"
+  client-secret: "${TWITCH_CLIENT_SECRET}"
+
 spring:
+  config:
+    # Optional so the app still starts in environments (e.g. EC2) that supply
+    # credentials purely via environment variables.
+    import: "optional:file:./application-local.yml"
   jackson:
     default-property-inclusion: non_null
   cloud:
@@ -12,7 +24,7 @@ spring:
             url: https://api.twitch.tv/helix
             loggerLevel: basic
             default-request-headers:
-              Client-Id: "jcbwkatsoe0krnc7y7uua3rjeqmix4"
+              Client-Id: "${twitch.client-id}"
   security:
     oauth2:
       client:
@@ -20,8 +32,8 @@ spring:
           twitch:
             authorization-grant-type: client_credentials
             client-authentication-method: client_secret_post
-            client-id: "jcbwkatsoe0krnc7y7uua3rjeqmix4"
-            client-secret: "***REMOVED***"
+            client-id: "${twitch.client-id}"
+            client-secret: "${twitch.client-secret}"
         provider:
           twitch:
             token-uri: https://id.twitch.tv/oauth2/token
@@ -37,6 +49,20 @@ spring:
   cache:
     caffeine:
       spec: expireAfterWrite=1m
+
+# Session cookie hardening (CSRF / XSS mitigation):
+#   same-site=lax  -> the session cookie is NOT sent on cross-site subrequests
+#                     (e.g. a POST/DELETE forged by a malicious page), which
+#                     mitigates CSRF without needing a token round-trip.
+#   http-only=true -> the cookie is unreadable from JavaScript, limiting theft via XSS.
+#   secure         -> intentionally left off so sessions work over plain HTTP
+#                     (local dev / HTTP EC2). Set `secure: true` once served over HTTPS.
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: lax
+        http-only: true
 
 logging:
   level:

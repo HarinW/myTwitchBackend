@@ -1,0 +1,19 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# LOCAL DEVELOPMENT SECRETS — TEMPLATE
+#
+# 1. Copy this file to `application-local.yml` (same directory).
+# 2. Fill in the credentials from https://dev.twitch.tv/console/apps
+# 3. `application-local.yml` is git-ignored and must NEVER be committed.
+#
+# In production (e.g. AWS EC2) prefer real environment variables instead:
+#   export TWITCH_CLIENT_ID=...
+#   export TWITCH_CLIENT_SECRET=...
+# ─────────────────────────────────────────────────────────────────────────────
+twitch:
+  client-id: "YOUR_TWITCH_CLIENT_ID"
+  client-secret: "YOUR_TWITCH_CLIENT_SECRET"
+
+# Optional: override the local database credentials if yours differ.
+# spring:
+#   datasource:
+#     password: "your-local-db-password"
